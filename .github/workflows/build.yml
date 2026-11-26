@@ -11,9 +11,14 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install pyinstaller
-      - run: python -m PyInstaller --onefile --noconsole --name ControlTerminal control_terminal.py
+      - name: Build exe
+        shell: pwsh
+        run: |
+          $f = Get-ChildItem -Recurse -Filter "control_terminal*.py" | Select-Object -First 1
+          if (-not $f) { Write-Error "control_terminal.py tidak ditemukan"; exit 1 }
+          Write-Host "Pakai file: $($f.FullName)"
+          python -m PyInstaller --onefile --noconsole --name ControlTerminal "$($f.FullName)"
       - uses: actions/upload-artifact@v4
         with:
           name: ControlTerminal-exe
           path: dist/ControlTerminal.exe
-          
